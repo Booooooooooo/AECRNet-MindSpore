@@ -14,6 +14,7 @@ Single image dehazing is a challenging ill-posed problem due to the severe infor
 
 - Python == 3.7.5
 - MindSpore: https://www.mindspore.cn/install
+- numpy
 
 ## Results
 
