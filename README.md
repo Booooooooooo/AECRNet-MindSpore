@@ -10,6 +10,11 @@ Single image dehazing is a challenging ill-posed problem due to the severe infor
 
 ![image-20210413200215378](https://github.com/Booooooooooo/AECRNet-MindSpore/blob/main/images/model.png)
 
+## Dependencies
+
+- Python == 3.7.5
+- MindSpore: https://www.mindspore.cn/install
+
 ## Results
 
 ![image-20210413200307113](https://github.com/Booooooooooo/AECRNet-MindSpore/blob/main/images/trade-off.png)
@@ -17,8 +22,3 @@ Single image dehazing is a challenging ill-posed problem due to the severe infor
 ![image-20210413200327940](https://github.com/Booooooooooo/AECRNet-MindSpore/blob/main/images/results.png)
 
 ![image-visual](https://github.com/Booooooooooo/AECRNet-MindSpore/blob/main/images/visual.png)
-
-## Dependencies
-
-- Python == 3.7.5
-- MindSpore: https://www.mindspore.cn/install
