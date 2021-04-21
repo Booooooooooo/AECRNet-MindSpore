@@ -1,6 +1,6 @@
 # AECRNet-MindSpore
 
-This is the MindSpore version of Contrastive Learning for Compact Single Image Dehazing, CVPR2021
+This is the MindSpore version of [Contrastive Learning for Compact Single Image Dehazing, CVPR2021](https://arxiv.org/abs/2104.09367)
 
 The official PyTorch implementation, pretrained models and examples are available at [https://github.com/GlassyWu/AECR-Net](https://github.com/GlassyWu/AECR-Net)
 
