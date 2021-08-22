@@ -19,13 +19,16 @@ Single image dehazing is a challenging ill-posed problem due to the severe infor
 - ModelArts：https://console.huaweicloud.com/modelarts/?region=cn-north-4#/dashboard
 
 
-
 ## Train
 
 We trained our mindspore version on HuaweiCloud ModelArts. Feel free to sign up and get hands on!
 
 1.  Create OBS bucket and prepare [dataset](https://competitions.codalab.org/competitions/28032)
-2.  We use PyCharm toolkit to help with the training process. You could find tutorial [here](https://support.huaweicloud.com/bestpractice-modelarts/modelarts_10_0021.html). Or you could start training following this [tutorial](https://support.huaweicloud.com/bestpractice-modelarts/modelarts_10_0080.html).
+2.  VGG pre-trained on ImageNet is used in our contrastive loss. Due to copyright reasons, the pre-trained VGG cannot be shared publicly. 
+3.  We use PyCharm toolkit to help with the training process. You could find tutorial [here](https://support.huaweicloud.com/bestpractice-modelarts/modelarts_10_0021.html). Or you could start training following this [tutorial](https://support.huaweicloud.com/bestpractice-modelarts/modelarts_10_0080.html).
+
+## Evaluation
+For now, we integrate evaluation module into training process.
 
 ## Results
 
@@ -34,3 +37,12 @@ We trained our mindspore version on HuaweiCloud ModelArts. Feel free to sign up 
 ![image-20210413200327940](https://github.com/Booooooooooo/AECRNet-MindSpore/blob/main/images/results.png)
 
 ![image-visual](https://github.com/Booooooooooo/AECRNet-MindSpore/blob/main/images/visual.png)
+
+## Citation
+Please kindly cite the references in your publications if it helps your research:
+```@inproceedings{wu2021contrastive,
+      title={Contrastive Learning for Compact Single Image Dehazing}, 
+      author={Haiyan Wu and Yanyun Qu and Shaohui Lin and Jian Zhou and Ruizhi Qiao and Zhizhong Zhang and Yuan Xie and Lizhuang Ma},
+      year={2021},
+      booktitle={Computer Vision and Pattern Recognition},
+}```
