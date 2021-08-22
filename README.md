@@ -45,4 +45,4 @@ Please kindly cite the references in your publications if it helps your research
       author={Haiyan Wu and Yanyun Qu and Shaohui Lin and Jian Zhou and Ruizhi Qiao and Zhizhong Zhang and Yuan Xie and Lizhuang Ma},
       year={2021},
       booktitle={Computer Vision and Pattern Recognition},
-}```
+}
