@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import mindspore.dataset.vision.py_transforms as py_trans
 from mindspore.dataset.transforms.py_transforms import Compose
 import mindspore.ops as ops
+# from mindspore import Tensor
 
 import numpy as np
 from PIL import Image
@@ -11,6 +12,7 @@ import random
 
 from option import opt
 
+# DATA_DIR = '/home/why/datasets/NH-HAZE'
 
 class DatasetGenerator:
     def __init__(self, path, train, format='.png'):
@@ -25,6 +27,7 @@ class DatasetGenerator:
             self.haze_imgs_dir = os.listdir(os.path.join(path, 'test', 'hazy'))
             self.haze_imgs = [os.path.join(path, 'test', 'hazy', img) for img in self.haze_imgs_dir]
             self.clear_dir = os.path.join(path, 'test', 'gt')
+        # print(self.haze_imgs_dir, self.clear_dir)
 
         np.random.seed(58)
         self.__random_seed = []
@@ -34,15 +37,21 @@ class DatasetGenerator:
 
     def __getitem__(self, index):
         self.__index += 1
+        if self.__index >= len(self.haze_imgs):
+            self.__index = 0
 
-        haze = Image.open(self.haze_imgs[index])
+        haze = Image.open(self.haze_imgs[index]) #读取第index张图片
         # if isinstance(self.size,int):
         #     while haze.size[0]<self.size or haze.size[1]<self.size :
         #         index=random.randint(0,20000)
         #         haze=Image.open(self.haze_imgs[index])
-        img=self.haze_imgs[index]
-        img_name=img.split('\\')[-1].split('_')
+        # img = self.haze_imgs[index].split('\\')[-1]
+        img=self.haze_imgs[index].split('/')[-1] #图片的名字
+        img_name = img.split('_')
+        # img_name=img.split('\\')[-1].split('_')
+        # print(img_name)
         clear_name=f"{img_name[0]}_gt_{img_name[2]}"
+        # clear_name = f"{img_name[0]}"
         # print(self.clear_dir, clear_name, os.path.join(self.clear_dir,clear_name))
         clear=Image.open(os.path.join(self.clear_dir,clear_name))
 
@@ -52,11 +61,12 @@ class DatasetGenerator:
         top = (h - nh)/2
         right = (w + nw)/2
         bottom = (h + nh)/2
-        clear = clear.crop((left, top, right, bottom))
+        clear = clear.crop((left, top, right, bottom)) #按中心裁剪，使clear和hazy大小一样
 
         return (haze, clear, index)
 
     def __len__(self):
+        # print("haze images:", len(self.haze_imgs))
         return len(self.haze_imgs)
 
     def get_seed(self):
@@ -72,6 +82,7 @@ def set_random_seed(img_name, seed):
 
 ds.config.set_seed(8)
 DATA_DIR = opt.data_url
+# DATA_DIR = 'C:\\Users\\44753\\Desktop\\NTIRE2021'
 
 train_dataset_generator = DatasetGenerator(DATA_DIR, train=True)
 train_dataset = ds.GeneratorDataset(train_dataset_generator, ["hazy", "gt", "img_name"], shuffle=True)
@@ -80,40 +91,60 @@ test_dataset = ds.GeneratorDataset(test_dataset_generator, ["hazy", "gt", "img_n
 
 transforms_list = [
     decode,
-    (lambda img_name: set_random_seed(img_name, dataset_generator.get_seed())),
+    (lambda img_name: set_random_seed(img_name, train_dataset_generator.get_seed())),
     py_trans.RandomCrop(opt.crop_size),
     py_trans.ToTensor(),
 ]
 compose_trans = Compose(transforms_list)
 train_dataset = train_dataset.map(operations=compose_trans, input_columns=["hazy"])
 train_dataset = train_dataset.map(operations=compose_trans, input_columns=["gt"])
+train_dataset = train_dataset.batch(opt.bs, drop_remainder=True)
 
+# test_dataset也需要裁剪成240*240，batch必须变为4维，否则将在mindspore.conv2D时报错
+test_transforms_list = [
+    decode,
+    (lambda img_name: set_random_seed(img_name, test_dataset_generator.get_seed())),
+    py_trans.RandomCrop(opt.crop_size),
+    py_trans.ToTensor(),
+]
+compose_trans = Compose(transforms_list)
+test_dataset = test_dataset.map(operations=compose_trans, input_columns=["hazy"])
+test_dataset = test_dataset.map(operations=compose_trans, input_columns=["gt"])
+test_dataset = test_dataset.batch(5, drop_remainder=False)
 
 if __name__ == '__main__':
-    dataset_generator = DatasetGenerator(DATA_DIR, train=True, size=192)
-    dataset = ds.GeneratorDataset(dataset_generator, ["hazy", "gt", "img_name"], shuffle=False)
+    for i in range(2):
+        print(i)
+        for batch in train_dataset.create_dict_iterator():
+            # print(batch)
+            # hazy = Tensor(batch["hazy"], dtype=mindspore.float32)
+            # clear = Tensor(batch["gt"], dtype=mindspore.float32)
 
-    transforms_list = [
-        decode,
-        (lambda img_name: set_random_seed(img_name, dataset_generator.get_seed())),
-        py_trans.RandomCrop(192),
-        py_trans.ToTensor(),
-    ]
-    compose_trans = Compose(transforms_list)
-    dataset = dataset.map(operations=compose_trans, input_columns=["hazy"])
-    dataset = dataset.map(operations=compose_trans, input_columns=["gt"])
-
-    hazy_list, gt_list = [], []
-    for data in dataset.create_dict_iterator():
-        hazy_list.append(data['hazy'])
-        gt_list.append(data['gt'])
-        print("Transformed image Shape:", data['hazy'].shape, ", Transformed label:", data['gt'].shape)
-
-    num_samples = 5
-    per = ops.Transpose()
-    for i in range(num_samples):
-        plt.subplot(2, num_samples, i+1)
-        plt.imshow(per(hazy_list[i], (1, 2, 0)).asnumpy())
-        plt.subplot(2, num_samples, num_samples + i + 1)
-        plt.imshow(per(gt_list[i], (1, 2, 0)).asnumpy())
-    plt.show()
+            print(batch["hazy"].shape, batch["gt"].shape)
+    # dataset_generator = DatasetGenerator(DATA_DIR, train=True, size=192)
+    # dataset = ds.GeneratorDataset(dataset_generator, ["hazy", "gt", "index"], shuffle=False)
+    #
+    # transforms_list = [
+    #     decode,
+    #     (lambda img_name: set_random_seed(img_name, dataset_generator.get_seed())),
+    #     py_trans.RandomCrop(192),
+    #     py_trans.ToTensor(),
+    # ]
+    # compose_trans = Compose(transforms_list)
+    # dataset = dataset.map(operations=compose_trans, input_columns=["hazy"])
+    # dataset = dataset.map(operations=compose_trans, input_columns=["gt"])
+    #
+    # hazy_list, gt_list = [], []
+    # for data in dataset.create_dict_iterator():
+    #     hazy_list.append(data['hazy'])
+    #     gt_list.append(data['gt'])
+    #     print("Transformed image Shape:", data['hazy'].shape, ", Transformed label:", data['gt'].shape)
+    #
+    # num_samples = 5
+    # per = ops.Transpose()
+    # for i in range(num_samples):
+    #     plt.subplot(2, num_samples, i+1)
+    #     plt.imshow(per(hazy_list[i], (1, 2, 0)).asnumpy())
+    #     plt.subplot(2, num_samples, num_samples + i + 1)
+    #     plt.imshow(per(gt_list[i], (1, 2, 0)).asnumpy())
+    # plt.show()

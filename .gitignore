@@ -2,11 +2,10 @@ logs
 .idea/
 _pycache_/
 logs/
-losses/
 MA_LOG/
-models/
 numpy_files/
 samples/
 trained_models/
 memo
-train.py
+tmp_test.py
+analyze_fail.dat

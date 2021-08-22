@@ -9,7 +9,7 @@ parser=argparse.ArgumentParser()
 parser.add_argument('--device',type=str,default='Automatic detection')
 parser.add_argument('--resume',type=bool,default=False)
 parser.add_argument('--epochs',type=int,default=100)
-parser.add_argument('--eval_step',type=int,default=5000)
+parser.add_argument('--eval_step',type=int,default=50)
 parser.add_argument('--lr', default=0.0001, type=float, help='learning rate')
 parser.add_argument('--model_dir',type=str,default='./trained_models/')
 parser.add_argument('--trainset',type=str,default='its_train')
@@ -72,8 +72,8 @@ parser.add_argument('--lr_decay_win', type=int, default=4, help='lr decay window
 parser.add_argument('--eval_dataset', type=bool, default=False)
 
 # ModelArts参数
-parser.add_argument('--data_url', type=str, default='')
-parser.add_argument('--train_url', type=str, default='')
+parser.add_argument('--data_url', type=str, default='/test-ddag/dataset/NHHaze21/')
+parser.add_argument('--train_url', type=str, default='/test-ddag/dataset/NHHaze21/train/')
 
 
 opt=parser.parse_args()
@@ -84,7 +84,8 @@ if not opt.transfer:
 else:
 	opt.model_name = 'ots_train_ffa_3_19_pretrain'
 
-opt.model_dir=opt.model_dir + opt.model_name + '.pk'
+# opt.model_dir=opt.model_dir + opt.model_name + '.pk'
+# opt.model_dir = opt.train_url
 log_dir='logs/'+opt.model_name if not opt.transfer else 'logs/'+opt.model_name+'_transfer_' + opt.model_info
 
 print(opt)
