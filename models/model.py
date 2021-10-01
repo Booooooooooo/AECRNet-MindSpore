@@ -83,22 +83,15 @@ class Mix(nn.Cell):
 class Dehaze(nn.Cell):
     def __init__(self, input_nc, output_nc, ngf=64):
         super(Dehaze, self).__init__()
-
         self.down1 = nn.SequentialCell([nn.Pad(paddings=((0,0), (0, 0), (3,3), (3,3)), mode='REFLECT'),
                                         nn.Conv2d(input_nc, ngf, kernel_size=7, padding=0),
                                         nn.ReLU()])
-        # self.pad = P.MirrorPad(mode="REFLECT")
-        # self.down1 = nn.SequentialCell([nn.Conv2d(input_nc, ngf, kernel_size=7, padding=0),
-        #                                 nn.ReLU()])
         self.down2 = nn.SequentialCell([nn.Conv2d(ngf, ngf*2, kernel_size=3, stride=2, pad_mode='pad', padding=1),
                                         nn.ReLU()])
         self.down3 = nn.SequentialCell([nn.Conv2d(ngf*2, ngf*4, kernel_size=3, stride=2, pad_mode='pad', padding=1),
                                         nn.ReLU()])
-
         self.block = DehazeBlock(default_conv, ngf*4, 3)
-
         self.up1 = nn.SequentialCell([nn.Conv2dTranspose(ngf*4, ngf*2, kernel_size=3, stride=2, pad_mode='pad', padding=1),
-                                      # nn.Pad(paddings=((0, 0), (0, 0), (0,1), (0,1))), ## output_padding=1
                                       nn.ReLU()])
         self.up2 = nn.SequentialCell([nn.Conv2dTranspose(ngf*2, ngf, kernel_size=3, stride=2, pad_mode='pad', padding=1),
                                       nn.Pad(paddings=((0, 0), (0, 0), (0,1),(0,1))),
@@ -106,11 +99,7 @@ class Dehaze(nn.Cell):
         self.up3 = nn.SequentialCell([nn.Pad(paddings=((0,0), (0,0), (3,3), (3,3)), mode='REFLECT'),
                                       nn.Conv2d(ngf, output_nc, kernel_size=7, padding=0),
                                       nn.Tanh()])
-
         self.dcn_block = DeformConv2d(256, 256)
-
-        #### deconv可以考虑省略
-        # self.deconv = FastDeconv(3, 3, kernel_size=3, stride=1, padding=1)
         self.deconv = nn.Conv2d(3, 3, 3, stride=1, padding=1, pad_mode='pad')
 
         m1 = -1
@@ -120,7 +109,6 @@ class Dehaze(nn.Cell):
         print(f'Mix setting: m1={m1} m2={m2}')
 
     def construct(self, x):
-        #### deconv可以考虑省略
         x_deconv = self.deconv(x)
 
         x_down1 = self.down1(x_deconv)
@@ -136,12 +124,10 @@ class Dehaze(nn.Cell):
         x5 = self.block(x4)
         x6 = self.block(x5)
 
-        ###TODO:dcn not implemented
         x_dcn1 = self.dcn_block(x6)
         x_dcn2 = self.dcn_block(x_dcn1)
 
         x_out_mix, m4 = self.mix4(x_down3, x_dcn2)
-        # x_out_mix, m4 = self.mix4(x_down3, x6)
         x_up1 = self.up1(x_out_mix)
         x_up1_mix, m5 = self.mix5(x_down2, x_up1)
         x_up2 = self.up2(x_up1_mix)

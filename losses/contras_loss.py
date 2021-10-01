@@ -14,9 +14,9 @@ from option import opt
 from models.config import imagenet_cfg
 from models.vgg_model import Vgg
 
-context.set_context(mode=context.GRAPH_MODE,
-                    device_target="Ascend",
-                    device_id=0)
+# context.set_context(mode=context.GRAPH_MODE,
+#                     device_target="Ascend",
+#                     device_id=0)
 
 cfg = {
     '11': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
@@ -82,9 +82,11 @@ class ContrastLoss(_Loss):
 
         d_ap, d_an = 0, 0
         for i in range(len(pred_vgg)):
-            d_ap = self.l1(pred_vgg[i], pos_vgg[i]) ##TODO:实际为pos_vgg[i].detach(), MindSpore不支持detach()
+            d_ap = self.l1(pred_vgg[i], pos_vgg[i]) ##
             d_an = self.l1(pred_vgg[i], neg_vgg[i]) ##neg_vgg[i].detach()
             contrastive = d_ap / (d_an + 1e-7)
 
             loss += self.weights[i] * contrastive
         return self.get_loss(loss)
+
+

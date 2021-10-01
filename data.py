@@ -41,18 +41,9 @@ class DatasetGenerator:
             self.__index = 0
 
         haze = Image.open(self.haze_imgs[index]) #读取第index张图片
-        # if isinstance(self.size,int):
-        #     while haze.size[0]<self.size or haze.size[1]<self.size :
-        #         index=random.randint(0,20000)
-        #         haze=Image.open(self.haze_imgs[index])
-        # img = self.haze_imgs[index].split('\\')[-1]
         img=self.haze_imgs[index].split('/')[-1] #图片的名字
         img_name = img.split('_')
-        # img_name=img.split('\\')[-1].split('_')
-        # print(img_name)
         clear_name=f"{img_name[0]}_gt_{img_name[2]}"
-        # clear_name = f"{img_name[0]}"
-        # print(self.clear_dir, clear_name, os.path.join(self.clear_dir,clear_name))
         clear=Image.open(os.path.join(self.clear_dir,clear_name))
 
         w, h = clear.size
@@ -82,7 +73,6 @@ def set_random_seed(img_name, seed):
 
 ds.config.set_seed(8)
 DATA_DIR = opt.data_url
-# DATA_DIR = 'C:\\Users\\44753\\Desktop\\NTIRE2021'
 
 train_dataset_generator = DatasetGenerator(DATA_DIR, train=True)
 train_dataset = ds.GeneratorDataset(train_dataset_generator, ["hazy", "gt", "img_name"], shuffle=True)

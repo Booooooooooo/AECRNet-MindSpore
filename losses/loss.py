@@ -10,9 +10,6 @@ class Loss(_Loss):
         super(Loss, self).__init__()
         self.l1loss = nn.L1Loss()
         self.contras_loss = ContrastLoss()
-        # self.opt = opt
-        # ops_print('In Loss', type(self.opt), self.opt.w_loss_vgg7)
-        # 不知道为什么这里print出来正确，但下面print self.opt.w_loss_l1就要报错。。。
         self.w_loss_l1 = 1
         self.w_loss_vgg7 = 0.1
 
@@ -20,9 +17,6 @@ class Loss(_Loss):
         l1_loss = self.l1loss(pred, gt)
         contras_loss = self.contras_loss(pred, pos, neg)
 
-        # ops_print(self.opt.w_loss_l1, self.opt.w_loss_vgg7)
-        # ops_print('In Loss:', l1_loss, contras_loss)
-        # loss = self.opt.w_loss_l1 * l1_loss + self.opt.w_loss_vgg7 * contras_loss
         loss = self.w_loss_l1 * l1_loss + self.w_loss_vgg7 * contras_loss
         return self.get_loss(loss)
 
