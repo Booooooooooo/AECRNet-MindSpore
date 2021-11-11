@@ -18,17 +18,30 @@ Single image dehazing is a challenging ill-posed problem due to the severe infor
 - numpy
 - ModelArts：https://console.huaweicloud.com/modelarts/?region=cn-north-4#/dashboard
 
-
 ## Train
 
-We trained our mindspore version on HuaweiCloud ModelArts. Feel free to sign up and get hands on!
+### Prepare data
 
-1.  Create OBS bucket and prepare [dataset](https://competitions.codalab.org/competitions/28032)
-2.  VGG pre-trained on ImageNet is used in our contrastive loss. Due to copyright reasons, the pre-trained VGG cannot be shared publicly. 
-3.  We use PyCharm toolkit to help with the training process. You could find tutorial [here](https://support.huaweicloud.com/bestpractice-modelarts/modelarts_10_0021.html). Or you could start training following this [tutorial](https://support.huaweicloud.com/bestpractice-modelarts/modelarts_10_0080.html).
+We use [RESIDE](https://sites.google.com/view/reside-dehaze-datasets/reside-standard) training set as our training data.
+
+### Train on ModelArts
+
+[ModelArts](https://support.huaweicloud.com/modelarts/index.html) is a one-stop AI development platform that enables developers and data scientists of any skill level to rapidly build, train, and deploy models anywhere, from the cloud to the edge.  Feel free to sign up and get hands on!
+
+1. Create OBS bucket and prepare dataset.
+
+2. VGG pre-trained on ImageNet is used in our contrastive loss. Due to copyright reasons, the pre-trained VGG cannot be shared publicly. 
+
+3. We use PyCharm toolkit to help with the training process. You could find tutorial [here](https://support.huaweicloud.com/bestpractice-modelarts/modelarts_10_0021.html). Or you could start training following this [tutorial](https://support.huaweicloud.com/bestpractice-modelarts/modelarts_10_0080.html).
+
+   ### Train on GPU
+
+   
+
+   `python train_wCR.py --device_target GPU --dir_data LOCATION_OF_DATA --test_every 1 --filename aecrnet_id1 --lr 0.0002 --epochs 300 --patch_size 240 --data_train RESIDE --neg_num 4 --contra_lambda 20`
 
 ## Evaluation
-For now, we integrate evaluation module into training process.
+`python eval.py --dir_data LOCATION_OF_DATA/Dense_Haze --batch_size 1 --test_only --ext "img" --data_test Dense --ckpt_path ckpt/aecrnet_id1.ckpt`
 
 ## Results
 
