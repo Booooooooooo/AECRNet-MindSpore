@@ -34,10 +34,14 @@ We use [RESIDE](https://sites.google.com/view/reside-dehaze-datasets/reside-stan
 
 ### Train on GPU
 
-`python train_wCR.py --device_target GPU --dir_data LOCATION_OF_DATA --test_every 1 --filename aecrnet_id1 --lr 0.0002 --epochs 300 --patch_size 240 --data_train RESIDE --neg_num 4 --contra_lambda 20`
+```python
+python train_wCR.py --device_target GPU --dir_data LOCATION_OF_DATA --test_every 1 --filename aecrnet_id1 --lr 0.0002 --epochs 300 --patch_size 240 --data_train RESIDE --neg_num 4 --contra_lambda 20
+```
 
 ## Evaluation
-`python eval.py --dir_data LOCATION_OF_DATA/Dense_Haze --batch_size 1 --test_only --ext "img" --data_test Dense --ckpt_path ckpt/aecrnet_id1.ckpt`
+```python
+python eval.py --dir_data LOCATION_OF_DATA/Dense_Haze --batch_size 1 --test_only --ext "img" --data_test Dense --ckpt_path ckpt/aecrnet_id1.ckpt
+```
 
 ## Results
 
