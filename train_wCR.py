@@ -55,7 +55,7 @@ class NetWithCRLossCell(nn.Cell):
         neg = numpy.flip(hazy, 0)
         neg = neg[:self.neg_num, :, :, :]
         l1_loss = self.l1_loss(pred, clear)
-        contras_loss = self.contrast_loss(pred, clear, neg)
+        contras_loss = self.contrast_loss(clear, pred, neg)
         # print(l1_loss, contras_loss)
         loss = l1_loss + self.contrast_w * contras_loss
         return loss
